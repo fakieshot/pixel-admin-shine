@@ -70,22 +70,38 @@ export default function AdminDashboard() {
         toast.error("User not authenticated");
         return;
       }
-
+  
       const profileData = {
         ...formData,
         wifiPassword,
         checkIn,
         checkOut,
       };
-
-      await submitProfileToBackend(profileData, token);
-      toast.success("Your profile has been published successfully!");
-      setIsPublished(true);
-    } catch (err) {
-      console.error("❌ Error publishing profile:", err);
-      toast.error("Failed to publish profile");
+  
+      const response = await fetch("https://filoxenia-api-373641445474.europe-west1.run.app/submit-onboarding", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(profileData),
+      });
+  
+      const result = await response.json();
+  
+      if (result.success) {
+        toast.success("Your profile has been published successfully!");
+        setIsPublished(true);
+      } else {
+        toast.error("Failed to publish profile");
+        console.error("❌ Backend error:", result.error);
+      }
+    } catch (error: any) {
+      console.error("❌ Publish error:", error.message);
+      toast.error("Something went wrong while publishing");
     }
   };
+  
 
   const renderStepContent = () => {
     switch (currentStep) {
