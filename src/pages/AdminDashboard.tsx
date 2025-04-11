@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +13,7 @@ import { BusinessProfileForm } from "@/components/forms/BusinessProfileForm";
 import { AmenitiesForm } from "@/components/forms/AmenitiesForm";
 import { ImageUploadForm } from "@/components/forms/ImageUploadForm";
 import { QRCodeSection } from "@/components/QRCodeSection";
+import { auth } from "@/lib/firebase";
 
 const steps = [
   { id: 1, title: "Business Profile", description: "Basic information about your business" },
@@ -34,6 +34,9 @@ export default function AdminDashboard() {
     amenities: [],
     images: [],
   });
+  const [wifiPassword, setWifiPassword] = useState("");
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
   const [isPublished, setIsPublished] = useState(false);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -60,9 +63,28 @@ export default function AdminDashboard() {
     }
   };
 
-  const handlePublish = () => {
-    toast.success("Your profile has been published successfully!");
-    setIsPublished(true);
+  const handlePublish = async () => {
+    try {
+      const token = await auth.currentUser?.getIdToken();
+      if (!token) {
+        toast.error("User not authenticated");
+        return;
+      }
+
+      const profileData = {
+        ...formData,
+        wifiPassword,
+        checkIn,
+        checkOut,
+      };
+
+      await submitProfileToBackend(profileData, token);
+      toast.success("Your profile has been published successfully!");
+      setIsPublished(true);
+    } catch (err) {
+      console.error("❌ Error publishing profile:", err);
+      toast.error("Failed to publish profile");
+    }
   };
 
   const renderStepContent = () => {
@@ -111,6 +133,18 @@ export default function AdminDashboard() {
                       <div>
                         <dt className="text-gray-500">Description</dt>
                         <dd className="font-medium">{formData.description}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-gray-500">Check-in Time</dt>
+                        <dd className="font-medium">{checkIn}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-gray-500">Check-out Time</dt>
+                        <dd className="font-medium">{checkOut}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-gray-500">WiFi Password</dt>
+                        <dd className="font-medium">{wifiPassword}</dd>
                       </div>
                     </dl>
                   </CardContent>
@@ -211,4 +245,29 @@ export default function AdminDashboard() {
       </div>
     </div>
   );
+}
+
+/**
+ * 🔐 Sends the collected onboarding data to your Cloud Run backend
+ */
+async function submitProfileToBackend(profileData: any, token: string) {
+  try {
+    const res = await fetch("https://filoxenia-api-373641445474.europe-west1.run.app/submit-onboarding", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(profileData),
+    });
+
+    const result = await res.json();
+    if (result.success) {
+      console.log("✅ Profile submitted successfully");
+    } else {
+      console.error("❌ Backend returned error:", result.error);
+    }
+  } catch (error) {
+    console.error("❌ Failed to submit to Cloud Run:", error);
+  }
 }
