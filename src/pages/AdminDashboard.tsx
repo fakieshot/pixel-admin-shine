@@ -14,10 +14,12 @@ import { AmenitiesForm } from "@/components/forms/AmenitiesForm";
 import { ImageUploadForm } from "@/components/forms/ImageUploadForm";
 import { QRCodeSection } from "@/components/QRCodeSection";
 import { auth } from "@/lib/firebase";
+import { TemplateSelectionForm } from "@/components/forms/TemplateSelectionForm";
+
 
 const steps = [
   { id: 1, title: "Business Profile", description: "Basic information about your business" },
-  { id: 2, title: "Amenities", description: "What you offer to guests" },
+  { id: 2, title: "Template Selection", description: "Pick a menu template" },
   { id: 3, title: "Photos", description: "Showcase your business" },
   { id: 4, title: "Preview & Publish", description: "Review and activate your profile" },
 ];
@@ -28,6 +30,7 @@ export default function AdminDashboard() {
     businessName: "",
     businessType: "",
     description: "",
+    selectedTemplate: "",
     address: "",
     phone: "",
     email: "",
@@ -112,13 +115,15 @@ export default function AdminDashboard() {
             updateFormData={updateFormData} 
           />
         );
-      case 2:
-        return (
-          <AmenitiesForm
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        );
+        case 2:
+          return (
+            <TemplateSelectionForm
+              businessType={formData.businessType}
+              selectedTemplate={formData.selectedTemplate}
+              updateFormData={updateFormData}
+            />
+          );
+        
       case 3:
         return (
           <ImageUploadForm 

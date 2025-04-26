@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => ({
   base: "/", // Leave as is unless you're using subpaths
   server: {
     host: "::",
-    port: 8080,
+    port: 3000,
   },
   build: {
     outDir: "dist", // <-- Add this for Netlify to know where to publish

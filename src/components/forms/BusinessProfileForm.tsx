@@ -36,29 +36,24 @@ export function BusinessProfileForm({ formData, updateFormData }: BusinessProfil
         </div>
         
         <div className="space-y-2">
-          <label htmlFor="businessType" className="text-sm font-medium">
-            Business Type
-          </label>
-          <Select
-            value={formData.businessType}
-            onValueChange={(value) => updateFormData({ businessType: value })}
-          >
-            <SelectTrigger id="businessType">
-              <SelectValue placeholder="Select business type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="hotel">Hotel</SelectItem>
-              <SelectItem value="resort">Resort</SelectItem>
-              <SelectItem value="boutique_hotel">Boutique Hotel</SelectItem>
-              <SelectItem value="bed_breakfast">Bed & Breakfast</SelectItem>
-              <SelectItem value="vacation_rental">Vacation Rental</SelectItem>
-              <SelectItem value="hostel">Hostel</SelectItem>
-              <SelectItem value="restaurant">Restaurant</SelectItem>
-              <SelectItem value="cafe">Café</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+  <label htmlFor="businessType" className="text-sm font-medium">
+    Business Type
+  </label>
+  <Select
+    value={formData.businessType}
+    onValueChange={(value) => updateFormData({ businessType: value })}
+  >
+    <SelectTrigger id="businessType">
+      <SelectValue placeholder="Select business type" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="hotel">Hotel</SelectItem>
+      <SelectItem value="restaurant">Restaurant</SelectItem>
+      <SelectItem value="brunch">Brunch</SelectItem>
+      <SelectItem value="cafe">Café</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
         
         <div className="space-y-2">
           <label htmlFor="description" className="text-sm font-medium">
